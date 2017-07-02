@@ -1,0 +1,24 @@
+service: serverless-screenshot-get
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: dev
+  region: us-east-1
+  timeout: 30
+  environment:
+
+# NOTE: These you might want to edit
+    default_timeoutms: 29000
+    default_delayms: 10
+    default_width: 1280
+    default_height: 1024
+    required_secret: none
+
+functions:
+  screenshot:
+    handler: handler.get
+    events:
+      - http:
+          path: screenshot
+          method: get
