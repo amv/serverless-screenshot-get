@@ -26,46 +26,37 @@ module.exports.get = (event, context, callback) => {
         }
     }
 
-    const uid = new Date().getTime();
-    const file = `/tmp/${uid}.png`;
-    const width = data.width || config.default_width || 1280;
-    const height = data.height || config.default_height || 1024;
-    const timeout = data.timeoutms || config.default_timeoutms || 29000;
-    const delay = data.delayms || config.default_delayms || 0;
-    const evaldelay = data.evaldelayms || config.default_evaldelayms || 0;
-    const url = data.url;
-    const clipheight = data.clipheight || 0;
-    const clipwidth = data.clipwidth || 0;
-    const clipwithiframe = data.clipwithiframe || '';
-    const evalcode = data.evalcode || '';
+    const tmpfilename = new Date().getTime();
+
+    const opts = {
+        url : data.url,
+        file : `/tmp/${tmpfilename}.png`,
+        width : data.width || config.default_width || 1280,
+        height : data.height || config.default_height || 1024,
+        clip : data.clip || '',
+        clipheight : data.clipheight || 0,
+        clipwidth : data.clipwidth || 0,
+        clipwithiframe : data.clipwithiframe || '',
+        evalcode : data.evalcode || '',
+        evaldelay : data.evaldelayms || config.default_evaldelayms || 0,
+        delay : data.delayms || config.default_delayms || 0,
+        timeout : data.timeoutms || config.default_timeoutms || 29000,
+    }
 
     let childProcess;
     let timeoutHandler;
 
     timeoutHandler = setTimeout( function() {
         timeoutHandler = false;
-        if ( ! childProcess ) {
-            return;
+        if ( childProcess ) {
+            childProcess.kill();
         }
-        childProcess.kill();
-    }, parseInt( timeout ) );
+    }, parseInt( opts.timeout ) );
 
-    var opts = {
-        url : url,
-        file : file,
-        width : width,
-        height : height,
-        delay : delay,
-        evaldelay : evaldelay,
-        evalcode : evalcode,
-        clipwidth : clipwidth,
-        clipheight : clipheight,
-        clipwithiframe : clipwithiframe
-    };
-    childProcess = execFile('./phantomjs/phantomjs-2.1.1-linux-x86_64', ['--ignore-ssl-errors=true', './phantomjs/run.js', JSON.stringify(opts) ], { timeout : timeout }, (error, stdout, stderr) => {
+    childProcess = execFile('./phantomjs/phantomjs-2.1.1-linux-x86_64', ['--ignore-ssl-errors=true', './phantomjs/run.js', JSON.stringify(opts) ], { timeout : parseInt( opts.timeout ) }, (error, stdout, stderr) => {
         childProcess = false;
         if ( ! timeoutHandler ) {
-            return errorcb( 408, 'ERROR: Timeout of '+ timeout +"ms exceeded\n\nSTDERR:\n\n" + error + "\n\nSTDOUT:\n\n" + stdout );
+            return errorcb( 408, 'ERROR: Timeout of '+ opts.timeout +"ms exceeded\n\nSTDERR:\n\n" + error + "\n\nSTDOUT:\n\n" + stdout );
         }
 
         clearTimeout( timeoutHandler );
@@ -74,9 +65,8 @@ module.exports.get = (event, context, callback) => {
             return errorcb( 500, error + "\n\nSTDOUT:\n\n" + stdout );
         }
         else {
-            const fb = fs.readFileSync(file);
+            const fb = fs.readFileSync( opts.file );
             return callback(null, { statusCode: 200, body: fb.toString('base64'), isBase64Encoded: true, headers: { "Content-Type" : "image/png" } } );
         }
     } );
-
 };
