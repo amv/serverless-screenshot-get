@@ -1,6 +1,6 @@
 {
   "name": "serverless-screenshot-get",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Serverless API for returning PNG data of a fresh web page screenshot",
   "author": "Antti Vähäkotamäki (https://github.com/amv)",
   "license": "MIT",
