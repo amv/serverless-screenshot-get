@@ -28,11 +28,16 @@ module.exports.get = (event, context, callback) => {
 
     const uid = new Date().getTime();
     const file = `/tmp/${uid}.png`;
-    const width = data.width || config.default_width;
-    const height = data.height || config.default_height;
-    const timeout = data.timeoutms || config.default_timeoutms;
-    const delay = data.delayms || config.default_delayms;
+    const width = data.width || config.default_width || 1280;
+    const height = data.height || config.default_height || 1024;
+    const timeout = data.timeoutms || config.default_timeoutms || 29000;
+    const delay = data.delayms || config.default_delayms || 0;
+    const evaldelay = data.evaldelayms || config.default_evaldelayms || 0;
     const url = data.url;
+    const clipheight = data.clipheight || 0;
+    const clipwidth = data.clipwidth || 0;
+    const clipwithiframe = data.clipwithiframe || '';
+    const evalcode = data.evalcode || '';
 
     let childProcess;
     let timeoutHandler;
@@ -45,7 +50,19 @@ module.exports.get = (event, context, callback) => {
         childProcess.kill();
     }, parseInt( timeout ) );
 
-    childProcess = execFile('./phantomjs/phantomjs-2.1.1-linux-x86_64', ['--debug=yes', '--ignore-ssl-errors=true', './phantomjs/run.js', url, file, width, height, delay ], { timeout : timeout }, (error, stdout, stderr) => {
+    var opts = {
+        url : url,
+        file : file,
+        width : width,
+        height : height,
+        delay : delay,
+        evaldelay : evaldelay,
+        evalcode : evalcode,
+        clipwidth : clipwidth,
+        clipheight : clipheight,
+        clipwithiframe : clipwithiframe
+    };
+    childProcess = execFile('./phantomjs/phantomjs-2.1.1-linux-x86_64', ['--ignore-ssl-errors=true', './phantomjs/run.js', JSON.stringify(opts) ], { timeout : timeout }, (error, stdout, stderr) => {
         childProcess = false;
         if ( ! timeoutHandler ) {
             return errorcb( 408, 'ERROR: Timeout of '+ timeout +"ms exceeded\n\nSTDERR:\n\n" + error + "\n\nSTDOUT:\n\n" + stdout );

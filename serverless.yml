@@ -10,7 +10,8 @@ provider:
 
 # NOTE: These you might want to edit
     default_timeoutms: 29000
-    default_delayms: 10
+    default_delayms: 100
+    default_evaldelayms: 10
     default_width: 1280
     default_height: 1024
     required_secret: none
