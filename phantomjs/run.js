@@ -12,7 +12,11 @@ var opts = {
     clip : '',
     clipwidth : 0,
     clipheight : 0,
-    clipwithiframe : ''
+    cliptop : 0,
+    clipleft : 0,
+    clipwithiframe : '',
+    iframescrollto : 0,
+    iframescrolldelay : 0
 };
 
 var arg_opts = JSON.parse( system.args[1] );
@@ -23,7 +27,7 @@ for ( var property in arg_opts ) {
     }
 }
 
-['width','height','delay','evaldelay','clipwidth','clipheight'].forEach( function( property ) {
+['width','height','delay','evaldelay','clipwidth','clipheight','cliptop','clipleft','iframescrollto','iframescrolldelay'].forEach( function( property ) {
     opts[ property ] = parseInt( opts[ property ] );
 } );
 
@@ -31,13 +35,15 @@ var page = webpage.create();
 
 page.viewportSize = { width: opts.width, height: opts.height };
 
-if ( opts.clip || opts.clipwidth || opts.clipheight ) {
+if ( opts.clip || opts.clipwithiframe || opts.clipwidth || opts.clipheight || opts.cliptop || opts.clipleft ) {
     var clipwidth = opts.clipwidth || opts.width;
     var clipheight = opts.clipheight || opts.height;
-    page.clipRect = { top: 0, left: 0, width: clipwidth, height: clipheight };
+    var cliptop = opts.cliptop || 0;
+    var clipleft = opts.clipleft || 0;
+    page.clipRect = { top: cliptop, left: clipleft, width: clipwidth, height: clipheight };
 }
 
-if ( ( opts.clip || opts.clipwidth || opts.clipheight ) && opts.clipwithiframe ) {
+if ( opts.clipwithiframe ) {
     page.open( 'about:blank', function( status ) {
         page.evaluate(function(u,w,h){
             var obj = document.createElement("object");
@@ -61,12 +67,26 @@ if ( ( opts.clip || opts.clipwidth || opts.clipheight ) && opts.clipwithiframe )
             else {
                 if ( opts.evalcode ) {
                     window.setTimeout( function() {
+                        page.switchToFrame("realpage");
                         page.evaluate( function( codetoeval ){
                             eval( codetoeval );
                         }, opts.evalcode );
                     }, opts.evaldelay );
                 }
+                if ( opts.iframescrollto ) {
+                    window.setTimeout( function() {
+                        page.switchToFrame("realpage");
+                        page.evaluate( function( to ){
+                            document.body.scrollTop = to;
+                        }, opts.iframescrollto );
+                    }, opts.iframescrolldelay );
+                }
                 window.setTimeout( function() {
+                    page.switchToFrame("realpage");
+                    page.evaluate(function(){
+                        document.body.style.overflow = 'hidden';
+                    });
+                    page.switchToMainFrame();
                     page.render(opts.file);
                     phantom.exit();
                 }, opts.delay );

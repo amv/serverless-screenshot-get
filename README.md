@@ -9,9 +9,19 @@ NOTE: This is meant as a building block for a system which does caching and resi
     curl -s -G 'https://fav7ffggds.execute-api.us-east-1.amazonaws.com/dev/screenshot' \
         --data-urlencode 'width=1280' \
         --data-urlencode 'height=1028' \
-        --data-urlencode 'delayms=10' \
+        --data-urlencode 'delayms=100' \
         --data-urlencode 'timeoutms=29000' \
+        --data-urlencode 'clip=yes' \
+        --data-urlencode 'clipwidth=1280' \
+        --data-urlencode 'clipheigth=1024' \
+        --data-urlencode 'cliptop=0' \
+        --data-urlencode 'clipleft=0' \
+        --data-urlencode 'clipwithiframe=yes' \
+        --data-urlencode 'iframescrollto=0' \
+        --data-urlencode 'iframescrolldelay=50' \
         --data-urlencode 'secret=myverysecret' \
+        --data-urlencode 'evalcode=document.body.style.backgroundColor = "black";' \
+        --data-urlencode 'evaldelayms=10' \
         --data-urlencode 'url=https://google.com' > screenshot.png
 
 `-G` just makes a `GET` request with issued data as url query parameters.

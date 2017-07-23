@@ -5,7 +5,9 @@ const fs = require('fs');
 
 var config = {
     default_timeoutms : process.env.default_timeoutms || 29000,
-    default_delayms : process.env.default_delayms || 10,
+    default_evaldelayms : process.env.defaulteval_delayms || 10,
+    default_iframescrolldelayms : process.env.default_iframescrolldelayms || 50,
+    default_delayms : process.env.default_delayms || 100,
     default_width : process.env.default_width || 1280,
     default_height : process.env.default_height || 1024,
     required_secret : process.env.required_secret || 'none',
@@ -36,7 +38,11 @@ module.exports.get = (event, context, callback) => {
         clip : data.clip || '',
         clipheight : data.clipheight || 0,
         clipwidth : data.clipwidth || 0,
+        cliptop : data.cliptop || 0,
+        clipleft : data.clipleft || 0,
         clipwithiframe : data.clipwithiframe || '',
+        iframescrollto : data.iframescrollto || 0,
+        iframescrolldelay : data.iframescrolldelayms || config.default_iframescrolldelayms || 0,
         evalcode : data.evalcode || '',
         evaldelay : data.evaldelayms || config.default_evaldelayms || 0,
         delay : data.delayms || config.default_delayms || 0,
