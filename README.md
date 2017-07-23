@@ -22,7 +22,7 @@ NOTE: This is meant as a building block for a system which does caching and resi
         --data-urlencode 'secret=myverysecret' \
         --data-urlencode 'evalcode=document.body.style.backgroundColor = "black";' \
         --data-urlencode 'evaldelayms=10' \
-        --data-urlencode 'url=https://google.com' > screenshot.png
+        --data-urlencode 'url=http://phantomjs.org/' > screenshot.png
 
 `-G` just makes a `GET` request with issued data as url query parameters.
 
