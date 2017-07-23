@@ -10,6 +10,8 @@ provider:
 
 # NOTE: These you might want to edit
     default_timeoutms: 29000
+    default_preloadevaldelayms: 10
+    default_preloaddelayms: 100
     default_evaldelayms: 10
     default_iframescrolldelayms: 50
     default_delayms: 100

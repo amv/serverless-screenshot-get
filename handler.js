@@ -5,6 +5,8 @@ const fs = require('fs');
 
 var config = {
     default_timeoutms : process.env.default_timeoutms || 29000,
+    default_preloadevaldelayms : process.env.default_preloadevaldelayms || 10,
+    default_preloaddelayms : process.env.default_preloaddelayms || 100,
     default_evaldelayms : process.env.defaulteval_delayms || 10,
     default_iframescrolldelayms : process.env.default_iframescrolldelayms || 50,
     default_delayms : process.env.default_delayms || 100,
@@ -31,6 +33,10 @@ module.exports.get = (event, context, callback) => {
     const tmpfilename = new Date().getTime();
 
     const opts = {
+        preloadurl : data.preloadurl || '',
+        preloadevalcode : data.preloadevalcode || '',
+        preloadevaldelay : data.preloadevaldelayms || config.default_preloadevaldelayms || 0,
+        preloaddelay : data.preloaddelayms || config.default_preloaddelayms || 0,
         url : data.url,
         file : `/tmp/${tmpfilename}.png`,
         width : data.width || config.default_width || 1280,
@@ -59,7 +65,7 @@ module.exports.get = (event, context, callback) => {
         }
     }, parseInt( opts.timeout ) );
 
-    childProcess = execFile('./phantomjs/phantomjs-2.1.1-linux-x86_64', ['--ignore-ssl-errors=true', './phantomjs/run.js', JSON.stringify(opts) ], { timeout : parseInt( opts.timeout ) }, (error, stdout, stderr) => {
+    childProcess = execFile('./phantomjs/phantomjs-2.1.1-linux-x86_64', ['--ignore-ssl-errors=true', './phantomscript.js', JSON.stringify(opts) ], { timeout : parseInt( opts.timeout ) }, (error, stdout, stderr) => {
         childProcess = false;
         if ( ! timeoutHandler ) {
             return errorcb( 408, 'ERROR: Timeout of '+ opts.timeout +"ms exceeded\n\nSTDERR:\n\n" + error + "\n\nSTDOUT:\n\n" + stdout );

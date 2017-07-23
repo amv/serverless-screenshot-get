@@ -6,6 +6,15 @@ NOTE: This is meant as a building block for a system which does caching and resi
 
 # Example usage
 
+To take a simple screenshot if you have deployed the lambda without a password:
+
+    curl -s -G 'https://fav7ffggds.execute-api.us-east-1.amazonaws.com/dev/screenshot' \
+        --data-urlencode 'url=http://phantomjs.org/' > screenshot.png
+
+NOTE: `-G` just makes curl do a `GET` request with issued data as url query parameters.
+
+There are also some other features available:
+
     curl -s -G 'https://fav7ffggds.execute-api.us-east-1.amazonaws.com/dev/screenshot' \
         --data-urlencode 'width=1280' \
         --data-urlencode 'height=1028' \
@@ -18,19 +27,31 @@ NOTE: This is meant as a building block for a system which does caching and resi
         --data-urlencode 'clipleft=0' \
         --data-urlencode 'clipwithiframe=yes' \
         --data-urlencode 'iframescrollto=0' \
-        --data-urlencode 'iframescrolldelay=50' \
-        --data-urlencode 'secret=myverysecret' \
-        --data-urlencode 'evalcode=document.body.style.backgroundColor = "black";' \
+        --data-urlencode 'iframescrolldelayms=50' \
+        --data-urlencode 'evalcode=$("body").css("backgroundColor","black");' \
         --data-urlencode 'evaldelayms=10' \
+        --data-urlencode 'preloadurl=http://phantomjs.org/login/' \
+        --data-urlencode 'preloaddelayms=2000' \
+        --data-urlencode 'preloadevalcode=$("#login").val("knight"); $("form").submit();' \
+        --data-urlencode 'preloadevaldelayms=10' \
+        --data-urlencode 'secret=myverysecret' \
         --data-urlencode 'url=http://phantomjs.org/' > screenshot.png
 
-`-G` just makes a `GET` request with issued data as url query parameters.
+# Parameter descriptions
 
 The only required parameter is `url`.
 
 Secret can be configured to be required when deploying, but is not required by default.
 
-Delay is time to wait after PhantomJS thinks page is loaded. Timeout is how long it tries to load it.
+Delay is time to wait before taking a screenshot after PhantomJS thinks the page is loaded.
+
+Timeout is how long PhantomJS is given time to do everything, preloads and delays included.
+
+Sometimes you want to enable `clipwithiframe` if you are dealing with pages that use scroll positions as navigation. Some sites (like google.com) do not allow you to browse through an iframe though, usually leading to a timeout, so it should not be used as default.
+
+jQuery 1.12.4 is injected into the pages before any `eval` code is run.
+
+If you preload a page where you log in using a JavaScript eval, you will need to increase `preloaddelayms` from the default 100 so that the browser has time to get and store your cookies.
 
 # Installing
 
