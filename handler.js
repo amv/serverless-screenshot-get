@@ -65,7 +65,7 @@ module.exports.get = (event, context, callback) => {
         }
     }, parseInt( opts.timeout ) );
 
-    childProcess = execFile('./phantomjs/phantomjs-2.1.1-linux-x86_64', ['--ignore-ssl-errors=true', './phantomscript.js', JSON.stringify(opts) ], { timeout : parseInt( opts.timeout ) }, (error, stdout, stderr) => {
+    childProcess = execFile( __dirname + '/phantomjs/phantomjs-2.1.1-linux-x86_64', ['--ignore-ssl-errors=true', __dirname + '/phantomscript.js', JSON.stringify(opts) ], { timeout : parseInt( opts.timeout ) }, (error, stdout, stderr) => {
         childProcess = false;
         if ( ! timeoutHandler ) {
             return errorcb( 408, 'ERROR: Timeout of '+ opts.timeout +"ms exceeded\n\nSTDERR:\n\n" + error + "\n\nSTDOUT:\n\n" + stdout );
