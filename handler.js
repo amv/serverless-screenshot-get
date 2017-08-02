@@ -15,6 +15,8 @@ var config = {
     required_secret : process.env.required_secret || 'none',
 };
 
+module.exports.config = config;
+
 module.exports.get = (event, context, callback) => {
     let data = event.queryStringParameters || {};
     const errorcb = function( code, message ) {
